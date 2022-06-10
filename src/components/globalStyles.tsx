@@ -22,4 +22,5 @@ export const Colors = {
 
 export const Fonts = {
 	mulish: "'Mulish', sans-serif",
+	poppins: "'Poppins', sans-serif"
 };
