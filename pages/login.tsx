@@ -11,19 +11,17 @@ import {
 	LinkTo,
 	LoginLayout,
 	Title,
-} from "../components";
-import { GlobalStyles } from "../components/globalStyles";
+} from "../styles";
+import { GlobalStyles } from "../styles/globalStyles";
 
 interface props {}
 
 type formFields = {
 	username: string;
-	firstName: string;
-	lastName: string;
 	password: string;
 };
 
-export const Register: React.FC<props> = () => {
+export const Login: React.FC<props> = () => {
 	const {
 		register,
 		formState: { errors },
@@ -31,8 +29,6 @@ export const Register: React.FC<props> = () => {
 	} = useForm<formFields>({
 		defaultValues: {
 			username: "",
-			firstName: "",
-			lastName: "",
 			password: "",
 		},
 		mode: "onBlur",
@@ -48,7 +44,7 @@ export const Register: React.FC<props> = () => {
 						alert("success");
 					})}
 				>
-					<Title>Register</Title>
+					<Title>Login</Title>
 					<InputWrapper invalid={!!errors.username}>
 						<div className="title">Your username</div>
 						<Input
@@ -56,24 +52,6 @@ export const Register: React.FC<props> = () => {
 							{...register("username")}
 						/>
 						<Error>{errors.username?.message}</Error>
-					</InputWrapper>
-
-					<InputWrapper invalid={!!errors.firstName}>
-						<div className="title">First name</div>
-						<Input
-							invalid={!!errors.firstName}
-							{...register("firstName")}
-						/>
-						<Error>{errors.firstName?.message}</Error>
-					</InputWrapper>
-
-					<InputWrapper invalid={!!errors.lastName}>
-						<div className="title">Last name</div>
-						<Input
-							invalid={!!errors.lastName}
-							{...register("lastName")}
-						/>
-						<Error>{errors.lastName?.message}</Error>
 					</InputWrapper>
 
 					<InputWrapper invalid={!!errors.password}>
@@ -87,10 +65,12 @@ export const Register: React.FC<props> = () => {
 					</InputWrapper>
 
 					<Button>Continue</Button>
+
+					<Link to={"/forgot-password"}>Forgot your password?</Link>
 				</Form>
 				<LinkTo>
-					Have an account?
-					<Link to={"/login"}>Sign in</Link>
+					Don’t have an account?
+					<Link to={"/register"}>Sign up</Link>
 				</LinkTo>
 			</main>
 
@@ -100,31 +80,19 @@ export const Register: React.FC<props> = () => {
 };
 
 function validateFields(values: formFields): ResolverResult {
-	const { password, username, firstName, lastName } = values;
+	const { password, username } = values;
 	const errors: any = {};
 
 	if (!username) {
 		errors.username = { message: "This field is required" };
 	} else if (username.length <= 3) {
-		errors.username = { message: "Username is too small" };
+		errors.username = { message: "username is too small" };
 	}
 
 	if (!password) {
 		errors.password = { message: "This field is required" };
 	} else if (password.length <= 3) {
-		errors.password = { message: "Password is too small" };
-	}
-
-	if (!lastName) {
-		errors.lastName = { message: "This field is required" };
-	} else if (lastName.length <= 3) {
-		errors.lastName = { message: "Last name is too small" };
-	}
-
-	if (!firstName) {
-		errors.firstName = { message: "This field is required" };
-	} else if (firstName.length <= 3) {
-		errors.firstName = { message: "First name is too small" };
+		errors.password = { message: "password is too small" };
 	}
 
 	return {

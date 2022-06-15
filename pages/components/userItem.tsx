@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserItemStyle, UserSubInfo } from "./mainStyle";
+import { UserItemStyle, UserSubInfo } from "../../styles/mainStyle";
 
 interface InputType{
     user: {
