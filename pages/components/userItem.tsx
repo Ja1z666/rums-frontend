@@ -3,9 +3,11 @@ import { UserItemStyle, UserSubInfo } from "../../styles/mainStyle";
 
 interface InputType{
     user: {
-        id: number;
-        name: string;
-        surname: string;
+        id: string;
+        username: string;
+        firstName: string;
+        lastName: string;
+        role: string;
     }
 }
 
@@ -16,8 +18,8 @@ export const UserItem = ({user}:InputType) => {
         <div className="userItem">
             <UserItemStyle onClick={() => setSubInfo(!subInfo)}>
                 <p>{user.id}</p>
-                <p>{user.name}</p>
-                <p>{user.surname}</p>
+                <p>{user.username}</p>
+                <p>{user.lastName}</p>
             </UserItemStyle>
             {
                 subInfo && 

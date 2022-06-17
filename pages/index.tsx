@@ -2,25 +2,40 @@ import { GlobalStyles } from "../styles/globalStyles";
 import { Container, DownloadButton, Footer, Line, MainLayout, NavBar, Search, Table } from "../styles/mainStyle";
 import { UserItem } from "./components/userItem";
 import { useState } from "react";
+import { gql } from "@apollo/client";
+import client from "./api/apollo-client";
 
-export default function Main(){
+export default function Main(props:any){
     const [users, setUsers] = useState([
         {
-            id: 1,
-            name: "Daniq",
-            surname: "Fedorovs"
-        },
-        {
-            id: 2,
-            name: "Daniq",
-            surname: "NotFedorovs"
-        },
-        {
-            id: 3,
-            name: "Biba",
-            surname: "Buba"
+            id: "1",
+            username: "username",
+            firstName: "firstname",
+            lastName: "lastname",
+            role: "role",
         }
     ]);
+    const [search, setSearch] = useState('')
+
+    const clienQuery = async (argument:string) => {
+        const { data } = await client.query({
+            query: gql`
+                query getUsers{
+                    search(keyword: "${argument}"){
+                        id
+                        username
+                        firstName
+                        lastName
+                        role
+                    }
+                }
+            `,
+        });
+
+        setUsers(data.search)
+    }
+
+    console.log(props);
 
     return(
         <MainLayout>
@@ -38,8 +53,8 @@ export default function Main(){
                 <h2>Main</h2>
                 <p>Šajā tabulā Tu vari apskatīt personalu</p>
                 <Search>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clip-rule="evenodd" d="M12.6047 11.4156L17.0881 15.8989C17.2457 16.0566 17.3341 16.2704 17.3341 16.4934C17.334 16.7163 17.2454 16.9301 17.0877 17.0877C16.93 17.2452 16.7161 17.3337 16.4932 17.3337C16.2703 17.3336 16.0565 17.2449 15.8989 17.0872L11.4156 12.6039C10.0753 13.642 8.38998 14.1305 6.70235 13.97C5.01473 13.8096 3.45161 13.0123 2.33098 11.7403C1.21036 10.4682 0.616405 8.81709 0.669956 7.1227C0.723507 5.42831 1.42054 3.81796 2.61925 2.61925C3.81796 1.42054 5.42831 0.723507 7.1227 0.669956C8.81709 0.616405 10.4682 1.21036 11.7403 2.33098C13.0123 3.45161 13.8096 5.01473 13.97 6.70235C14.1305 8.38998 13.642 10.0753 12.6039 11.4156H12.6047ZM7.33391 12.3331C8.65999 12.3331 9.93176 11.8063 10.8694 10.8686C11.8071 9.93093 12.3339 8.65916 12.3339 7.33308C12.3339 6.007 11.8071 4.73523 10.8694 3.79755C9.93176 2.85986 8.65999 2.33308 7.33391 2.33308C6.00783 2.33308 4.73606 2.85986 3.79838 3.79755C2.8607 4.73523 2.33391 6.007 2.33391 7.33308C2.33391 8.65916 2.8607 9.93093 3.79838 10.8686C4.73606 11.8063 6.00783 12.3331 7.33391 12.3331V12.3331Z" fill="#424242"/></svg>
-                    <input type="text" placeholder="Search"/>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M12.6047 11.4156L17.0881 15.8989C17.2457 16.0566 17.3341 16.2704 17.3341 16.4934C17.334 16.7163 17.2454 16.9301 17.0877 17.0877C16.93 17.2452 16.7161 17.3337 16.4932 17.3337C16.2703 17.3336 16.0565 17.2449 15.8989 17.0872L11.4156 12.6039C10.0753 13.642 8.38998 14.1305 6.70235 13.97C5.01473 13.8096 3.45161 13.0123 2.33098 11.7403C1.21036 10.4682 0.616405 8.81709 0.669956 7.1227C0.723507 5.42831 1.42054 3.81796 2.61925 2.61925C3.81796 1.42054 5.42831 0.723507 7.1227 0.669956C8.81709 0.616405 10.4682 1.21036 11.7403 2.33098C13.0123 3.45161 13.8096 5.01473 13.97 6.70235C14.1305 8.38998 13.642 10.0753 12.6039 11.4156H12.6047ZM7.33391 12.3331C8.65999 12.3331 9.93176 11.8063 10.8694 10.8686C11.8071 9.93093 12.3339 8.65916 12.3339 7.33308C12.3339 6.007 11.8071 4.73523 10.8694 3.79755C9.93176 2.85986 8.65999 2.33308 7.33391 2.33308C6.00783 2.33308 4.73606 2.85986 3.79838 3.79755C2.8607 4.73523 2.33391 6.007 2.33391 7.33308C2.33391 8.65916 2.8607 9.93093 3.79838 10.8686C4.73606 11.8063 6.00783 12.3331 7.33391 12.3331V12.3331Z" fill="#424242"/></svg>
+                    <input type="text" onChange={e => setSearch(e.target.value)} value={search} onKeyPress={e => e.key === 'Enter' && clienQuery(search)} placeholder="Search"/>
                 </Search>
             </Container>
             <Line />
@@ -68,4 +83,49 @@ export default function Main(){
             </Container>
         </MainLayout>
     )
+}
+
+export async function getServerSideProps() {
+    // try{
+    //     const { data } = await client.query({
+    //         query: gql`
+    //             query me {
+    //                 me{
+    //                     id
+    //                 }
+    //             }
+    //         `,
+    //     });
+    //     console.log(data);
+    //     return {
+    //         props: {
+    //             me: data.me
+    //         },
+    //     };
+    // }catch(e){
+    //     return {
+    //         // redirect: {
+    //         //     destination: '/login',
+    //         //     permanent: false,
+    //         // },
+    //         props: {
+    //             dima: 'dima'
+    //         }
+    //     }
+    // }
+    const { data } = await client.query({
+            query: gql`
+                query me {
+                    me{
+                        id
+                    }
+                }
+            `,
+        });
+        console.log(data);
+        return {
+            props: {
+                me: data.me
+            },
+        };
 }

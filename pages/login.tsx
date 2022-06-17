@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { ResolverResult, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import Link from 'next/link'
 import {
 	Button,
 	Error,
@@ -8,11 +8,12 @@ import {
 	Form,
 	Input,
 	InputWrapper,
-	LinkTo,
 	LoginLayout,
 	Title,
 } from "../styles";
 import { GlobalStyles } from "../styles/globalStyles";
+import client from "./api/apollo-client";
+import { gql } from "@apollo/client";
 
 interface props {}
 
@@ -21,7 +22,7 @@ type formFields = {
 	password: string;
 };
 
-export const Login: React.FC<props> = () => {
+const Login: React.FC<props> = () => {
 	const {
 		register,
 		formState: { errors },
@@ -35,13 +36,39 @@ export const Login: React.FC<props> = () => {
 		reValidateMode: "onBlur",
 		resolver: validateFields,
 	});
+
+	const login = async (userFields:formFields) => {
+		const LOGIN = gql`
+			mutation login{
+				login(options: {username: "${userFields.username}", password: "${userFields.password}"}){
+					data{
+						id
+					}
+					errors{
+						field
+						message
+    				}
+				}
+			}
+		`;
+		const { data } = await client.mutate({
+			mutation: LOGIN,
+		});
+
+		if(!data.login.data){
+			console.log(data.login.errors[0]);
+		}else{
+			console.log(data.login);
+		}
+	}
+
 	return (
 		<LoginLayout>
 			<GlobalStyles />
 			<main>
 				<Form
 					onSubmit={handleSubmit((e) => {
-						alert("success");
+						login({username: e.username, password: e.password});
 					})}
 				>
 					<Title>Login</Title>
@@ -66,18 +93,16 @@ export const Login: React.FC<props> = () => {
 
 					<Button>Continue</Button>
 
-					<Link to={"/forgot-password"}>Forgot your password?</Link>
+					<Link href="/forgot-password">Forgot your password?</Link>
 				</Form>
-				<LinkTo>
-					Don’t have an account?
-					<Link to={"/register"}>Sign up</Link>
-				</LinkTo>
 			</main>
 
 			<Footer>©️ITSA, 2022</Footer>
 		</LoginLayout>
 	);
-};
+}
+
+export default Login;
 
 function validateFields(values: formFields): ResolverResult {
 	const { password, username } = values;
@@ -100,3 +125,27 @@ function validateFields(values: formFields): ResolverResult {
 		values,
 	};
 }
+
+// export async function getServerSideProps() {
+//     try{
+//         const { data } = await client.query({
+//             query: gql`
+//                 query me {
+//                     me{
+//                         id
+//                     }
+//                 }
+//             `,
+//         });
+//         return {
+//             redirect: {
+//               destination: '/',
+//               permanent: false,
+//             },
+//         }
+//     }catch(e){
+//         return {
+//             props: {}
+//         }
+//     }
+// }
